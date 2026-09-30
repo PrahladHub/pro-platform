@@ -1,16 +1,42 @@
-# React + Vite
+# 🚀 Pro-Platform — Professional SaaS Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A modern, fully-functional SaaS dashboard built with React, Vite, and Tailwind CSS. Features complete authentication, PIN-protected workspace, website management, and business analytics.
 
-Currently, two official plugins are available:
+![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind-3-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Vercel](https://img.shields.io/badge/Deployed-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🌐 Live Demo
 
-## React Compiler
+**👉 [https://pro-platform-rho.vercel.app](https://pro-platform-rho.vercel.app)**
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ Features
 
-## Expanding the Oxlint configuration
+- 🔐 **Authentication System** — Login, signup, and session persistence
+- 🔒 **PIN-Protected Desktop** — 4-digit PIN to unlock the workspace
+- 🏢 **Website Management** — Create, list, and delete websites (localStorage)
+- 📦 **Products Module** — Product listing with search and status
+- 🛒 **Orders Management** — Orders with status filters (Pending, Confirmed, Delivered)
+- 👥 **Customers Directory** — Customer cards with contact information
+- 💳 **Payments Tracking** — Transaction history with summary cards
+- 🖼️ **Media Library** — Upload zone and file grid
+- ⚙️ **Settings Panel** — Profile, Store, Notifications, Security, Billing
+- 📊 **Analytics Dashboard** — Stats cards and recent orders
+- 📱 **Fully Responsive** — Works on mobile, tablet, and desktop
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|-----------|---------|
+| **React 18** | UI Library |
+| **Vite** | Build Tool |
+| **Tailwind CSS** | Styling |
+| **React Router v6** | Routing |
+| **React Icons (fa6)** | Icons |
+| **Context API** | State Management |
+| **localStorage** | Data Persistence |
+| **Vercel** | Hosting & Deployment |
+| **Git & GitHub** | Version Control |
+
+## 📁 Project Structure
