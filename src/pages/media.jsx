@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
-import { FaGlobe, FaGear, FaChevronDown, FaDesktop, FaPlus, FaImage, FaTrash, FaCloudUploadAlt } from 'react-icons/fa6';
+import { FaGlobe, FaGear, FaChevronDown, FaDesktop, FaPlus, FaImage, FaTrash, FaCloudArrowUp } from 'react-icons/fa6';
 import { useAuth } from '../context/AuthContext';
 
 const Media = () => {
@@ -62,7 +62,7 @@ const Media = () => {
 
           {/* Upload Drop Zone */}
           <div className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-10 text-center mb-6 hover:border-primary transition cursor-pointer">
-            <FaCloudUploadAlt className="text-5xl text-gray-400 mx-auto mb-3" />
+          <FaCloudArrowUp className="text-5xl text-gray-400 mx-auto mb-3" />
             <p className="text-gray-700 font-medium">Drop files here to upload</p>
             <p className="text-gray-500 text-sm mt-1">or click to browse from your computer</p>
             <p className="text-gray-400 text-xs mt-3">Max size: 5MB • JPG, PNG, SVG, PDF, MP4</p>
