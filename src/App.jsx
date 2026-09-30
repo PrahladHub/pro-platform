@@ -6,10 +6,9 @@ import Dashboard from './pages/Dashboard';
 import CreatePin from './pages/CreatePin';
 import Workspace from './pages/Workspace';
 import Websites from './pages/Websites';
-import Products from './pages/Products';
-import Orders from './pages/Orders';
-import Customers from './pages/Customers';
-
+import Products from "./pages/products";
+import Orders from "./pages/orders";
+import Customers from "./pages/customers";
 function App() {
   return (
     <AuthProvider>
