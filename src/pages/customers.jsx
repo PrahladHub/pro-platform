@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
-import { FaGlobe, FaGear, FaChevronDown, FaDesktop, FaSearch, FaUser, FaEnvelope, FaPhone } from 'react-icons/fa6';
+import { FaGlobe, FaGear, FaChevronDown, FaDesktop, FaMagnifyingGlass, FaUserLarge, FaEnvelope, FaPhone } from 'react-icons/fa6';
 import { useAuth } from '../context/AuthContext';
 
 const Customers = () => {
@@ -57,7 +57,7 @@ const Customers = () => {
           {/* Search */}
           <div className="bg-white p-4 rounded-xl shadow-sm mb-5">
             <div className="flex items-center border border-gray-300 rounded-lg px-4 py-2 bg-gray-50">
-              <FaSearch className="text-gray-400 mr-3" />
+            <FaMagnifyingGlass className="text-gray-400 mr-3" />
               <input
                 type="text"
                 placeholder="Search customers by name or email..."
