@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import CreatePin from './pages/CreatePin';
 import Workspace from './pages/Workspace';
 import Websites from './pages/Websites';
+import CreateWebsite from './pages/CreateWebsite';
 import Products from './pages/products';
 import Orders from './pages/orders';
 import Customers from './pages/customers';
@@ -21,6 +22,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/websites" element={<ProtectedRoute><Websites /></ProtectedRoute>} />
+          <Route path="/create-website" element={<ProtectedRoute><CreateWebsite /></ProtectedRoute>} />
           <Route path="/products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
           <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
           <Route path="/customers" element={<ProtectedRoute><Customers /></ProtectedRoute>} />
