@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
-import { FaGlobe, FaGear, FaChevronDown, FaPlus, FaEye, FaEdit, FaTrash, FaDesktop } from 'react-icons/fa6';
+import { FaGlobe, FaGear, FaChevronDown, FaPlus, FaEye, FaPenToSquare, FaTrash, FaDesktop } from 'react-icons/fa6';
 import { useAuth } from '../context/AuthContext';
 
 const Websites = () => {
@@ -73,7 +73,7 @@ const Websites = () => {
                     <FaEye className="inline mr-1" /> View
                   </button>
                   <button className="flex-1 py-2 bg-gray-50 text-gray-600 rounded-lg text-xs font-medium">
-                    <FaEdit className="inline mr-1" /> Edit
+                     <FaPenToSquare className="inline mr-1" /> Edit
                   </button>
                   <button
                     onClick={() => handleDelete(site.id)}
