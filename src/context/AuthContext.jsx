@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { authAPI } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -6,26 +7,56 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isPinSet, setIsPinSet] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
   const [websites, setWebsites] = useState([]);
 
   useEffect(() => {
     const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
     const pinSet = localStorage.getItem('desktopPin') !== null;
+    const savedUser = JSON.parse(localStorage.getItem('user') || 'null');
     const savedWebsites = JSON.parse(localStorage.getItem('websites') || '[]');
 
     setIsLoggedIn(loggedIn);
     setIsPinSet(pinSet);
+    setUser(savedUser);
     setWebsites(savedWebsites);
     setLoading(false);
   }, []);
 
-  const login = (email, password) => {
-    if (email && password) {
+  // REAL LOGIN - Backend se connect
+  const login = async (email, password) => {
+    try {
+      const response = await authAPI.login({ email, password });
+
       localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify(response.user));
+
       setIsLoggedIn(true);
-      return true;
+      setUser(response.user);
+
+      return { success: true, message: response.message };
+    } catch (error) {
+      return { success: false, message: error.message };
     }
-    return false;
+  };
+
+  // REAL SIGNUP - Backend se connect
+  const signup = async (name, email, password) => {
+    try {
+      const response = await authAPI.signup({ name, email, password });
+
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify(response.user));
+
+      setIsLoggedIn(true);
+      setUser(response.user);
+
+      return { success: true, message: response.message };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
   };
 
   const createPin = (pin) => {
@@ -41,9 +72,12 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('desktopPin');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     localStorage.removeItem('websites');
     setIsLoggedIn(false);
     setIsPinSet(false);
+    setUser(null);
     setWebsites([]);
   };
 
@@ -77,8 +111,8 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{
-      isLoggedIn, isPinSet, loading,
-      login, createPin, logout,
+      isLoggedIn, isPinSet, loading, user,
+      login, signup, createPin, logout,
       websites, addWebsite, deleteWebsite, updateWebsite
     }}>
       {children}
