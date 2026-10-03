@@ -17,22 +17,18 @@ import Settings from './pages/settings';
 import Storefront from './pages/Storefront';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
+import Billing from './pages/Billing';
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Public Storefront */}
           <Route path="/store/:storeSlug" element={<Storefront />} />
           <Route path="/store/:storeSlug/cart" element={<Cart />} />
           <Route path="/store/:storeSlug/checkout" element={<Checkout />} />
-
-          {/* Auth */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-
-          {/* Admin */}
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/websites" element={<ProtectedRoute><Websites /></ProtectedRoute>} />
           <Route path="/create-website" element={<ProtectedRoute><CreateWebsite /></ProtectedRoute>} />
@@ -42,9 +38,9 @@ function App() {
           <Route path="/payments" element={<ProtectedRoute><Payments /></ProtectedRoute>} />
           <Route path="/media" element={<ProtectedRoute><Media /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          <Route path="/billing" element={<ProtectedRoute><Billing /></ProtectedRoute>} />
           <Route path="/create-pin" element={<ProtectedRoute><CreatePin /></ProtectedRoute>} />
           <Route path="/workspace" element={<ProtectedRoute requirePin={true}><Workspace /></ProtectedRoute>} />
-
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
