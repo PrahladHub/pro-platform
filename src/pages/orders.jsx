@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { FaGlobe, FaGear, FaChevronDown, FaDesktop, FaMagnifyingGlass } from 'react-icons/fa6';
@@ -7,34 +7,86 @@ import { useAuth } from '../context/AuthContext';
 const Orders = () => {
   const navigate = useNavigate();
   const { isPinSet } = useAuth();
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
+  const [error, setError] = useState('');
 
-  const orders = [
-    { id: 'ORD-101', customer: 'Rahul Kumar', product: 'Rice 1kg', amount: 120, status: 'Pending', date: '2026-09-28' },
-    { id: 'ORD-102', customer: 'Priya Singh', product: 'Oil 1L', amount: 160, status: 'Confirmed', date: '2026-09-28' },
-    { id: 'ORD-103', customer: 'Amit Das', product: 'Sugar 1kg', amount: 45, status: 'Pending', date: '2026-09-27' },
-    { id: 'ORD-104', customer: 'Neha Patel', product: 'Atta 5kg', amount: 220, status: 'Delivered', date: '2026-09-27' },
-    { id: 'ORD-105', customer: 'Vikram Singh', product: 'Rice 5kg', amount: 580, status: 'Delivered', date: '2026-09-26' },
-    { id: 'ORD-106', customer: 'Sneha Verma', product: 'Oil 5L', amount: 750, status: 'Cancelled', date: '2026-09-26' },
-  ];
+  const statuses = ['All', 'pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
 
-  const statuses = ['All', 'Pending', 'Confirmed', 'Delivered', 'Cancelled'];
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
-  const filteredOrders = orders.filter(o => {
-    const matchesFilter = filter === 'All' || o.status === filter;
-    const matchesSearch = o.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          o.id.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      const API_URL = 'http://localhost:5000/api';
+
+      const res = await fetch(`${API_URL}/orders`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to fetch orders');
+      }
+
+      setOrders(data.orders || []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateStatus = async (id, status) => {
+    try {
+      const token = localStorage.getItem('token');
+      const API_URL = 'http://localhost:5000/api';
+
+      const res = await fetch(`${API_URL}/orders/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status }),
+      });
+
+      if (res.ok) {
+        fetchOrders();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const getStatusColor = (status) => {
-    if (status === 'Pending') return 'bg-yellow-100 text-yellow-700';
-    if (status === 'Confirmed') return 'bg-blue-100 text-blue-700';
-    if (status === 'Delivered') return 'bg-green-100 text-green-700';
-    if (status === 'Cancelled') return 'bg-red-100 text-red-700';
-    return 'bg-gray-100 text-gray-700';
+    const colors = {
+      pending: 'bg-yellow-100 text-yellow-700',
+      confirmed: 'bg-blue-100 text-blue-700',
+      shipped: 'bg-purple-100 text-purple-700',
+      delivered: 'bg-green-100 text-green-700',
+      cancelled: 'bg-red-100 text-red-700',
+    };
+    return colors[status] || 'bg-gray-100 text-gray-700';
   };
+
+  const filteredOrders = orders.filter((o) => {
+    const matchesFilter = filter === 'All' || o.status === filter;
+    const matchesSearch =
+      !searchTerm ||
+      o.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      o.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      o.customer?.phone?.includes(searchTerm);
+    return matchesFilter && matchesSearch;
+  });
 
   return (
     <div className="flex h-screen">
@@ -65,7 +117,9 @@ const Orders = () => {
         <div className="p-6 flex-1 overflow-y-auto">
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-800">Orders</h1>
-            <p className="text-sm text-gray-500 mt-1">{orders.length} total orders</p>
+            <p className="text-sm text-gray-500 mt-1">
+              {orders.length} total orders
+            </p>
           </div>
 
           {/* Filters */}
@@ -74,7 +128,7 @@ const Orders = () => {
             <FaMagnifyingGlass className="text-gray-400 mr-3" />
               <input
                 type="text"
-                placeholder="Search by customer or order ID..."
+                placeholder="Search by order ID, customer, phone..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="bg-transparent outline-none w-full text-sm"
@@ -85,8 +139,10 @@ const Orders = () => {
                 <button
                   key={s}
                   onClick={() => setFilter(s)}
-                  className={`px-4 py-2 rounded-lg text-xs font-medium transition ${
-                    filter === s ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  className={`px-4 py-2 rounded-lg text-xs font-medium transition capitalize ${
+                    filter === s
+                      ? 'bg-primary text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
                   {s}
@@ -96,42 +152,85 @@ const Orders = () => {
           </div>
 
           {/* Orders Table */}
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="text-left px-5 py-3 text-sm font-semibold text-gray-500">Order ID</th>
-                  <th className="text-left px-5 py-3 text-sm font-semibold text-gray-500">Customer</th>
-                  <th className="text-left px-5 py-3 text-sm font-semibold text-gray-500">Product</th>
-                  <th className="text-left px-5 py-3 text-sm font-semibold text-gray-500">Amount</th>
-                  <th className="text-left px-5 py-3 text-sm font-semibold text-gray-500">Date</th>
-                  <th className="text-left px-5 py-3 text-sm font-semibold text-gray-500">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredOrders.length === 0 ? (
+          {loading ? (
+            <div className="bg-white p-10 rounded-xl text-center text-gray-500">
+              Loading orders...
+            </div>
+          ) : error ? (
+            <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl">
+              {error}
+            </div>
+          ) : filteredOrders.length === 0 ? (
+            <div className="bg-white p-10 rounded-xl text-center text-gray-500">
+              No orders found
+            </div>
+          ) : (
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-gray-50">
                   <tr>
-                    <td colSpan="6" className="text-center py-10 text-gray-500">No orders found</td>
+                    <th className="text-left px-5 py-3 text-sm font-semibold text-gray-500">
+                      Order ID
+                    </th>
+                    <th className="text-left px-5 py-3 text-sm font-semibold text-gray-500">
+                      Customer
+                    </th>
+                    <th className="text-left px-5 py-3 text-sm font-semibold text-gray-500">
+                      Items
+                    </th>
+                    <th className="text-left px-5 py-3 text-sm font-semibold text-gray-500">
+                      Total
+                    </th>
+                    <th className="text-left px-5 py-3 text-sm font-semibold text-gray-500">
+                      Payment
+                    </th>
+                    <th className="text-left px-5 py-3 text-sm font-semibold text-gray-500">
+                      Status
+                    </th>
                   </tr>
-                ) : (
-                  filteredOrders.map((order) => (
-                    <tr key={order.id} className="border-t border-gray-100 hover:bg-gray-50">
-                      <td className="px-5 py-3 text-sm font-medium text-gray-800">{order.id}</td>
-                      <td className="px-5 py-3 text-sm text-gray-700">{order.customer}</td>
-                      <td className="px-5 py-3 text-sm text-gray-600">{order.product}</td>
-                      <td className="px-5 py-3 text-sm font-semibold text-gray-800">₹{order.amount}</td>
-                      <td className="px-5 py-3 text-sm text-gray-500">{order.date}</td>
-                      <td className="px-5 py-3">
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(order.status)}`}>
-                          {order.status}
+                </thead>
+                <tbody>
+                  {filteredOrders.map((order) => (
+                    <tr key={order._id} className="border-t border-gray-100 hover:bg-gray-50">
+                      <td className="px-5 py-3 text-sm font-medium text-gray-800">
+                        #{order.orderNumber || order._id.slice(-6)}
+                      </td>
+                      <td className="px-5 py-3 text-sm text-gray-700">
+                        <div>{order.customer?.name}</div>
+                        <div className="text-xs text-gray-500">
+                          {order.customer?.phone}
+                        </div>
+                      </td>
+                      <td className="px-5 py-3 text-sm text-gray-600">
+                        {order.items?.length || 0} items
+                      </td>
+                      <td className="px-5 py-3 text-sm font-semibold text-gray-800">
+                        ₹{order.total}
+                      </td>
+                      <td className="px-5 py-3 text-xs">
+                        <span className="px-2 py-1 rounded bg-gray-100 text-gray-700 uppercase">
+                          {order.paymentMethod || 'COD'}
                         </span>
                       </td>
+                      <td className="px-5 py-3">
+                        <select
+                          value={order.status}
+                          onChange={(e) => updateStatus(order._id, e.target.value)}
+                          className={`px-3 py-1 rounded-full text-xs font-semibold border-0 outline-none cursor-pointer ${getStatusColor(order.status)}`}
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="confirmed">Confirmed</option>
+                          <option value="shipped">Shipped</option>
+                          <option value="delivered">Delivered</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
+                      </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </main>
     </div>

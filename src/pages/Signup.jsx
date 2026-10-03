@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FaUser, FaEnvelope, FaLock, FaCube } from 'react-icons/fa6';
+import { FaUser, FaEnvelope, FaLock, FaCube, FaStore } from 'react-icons/fa6';
 
 const Signup = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [storeName, setStoreName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { signup } = useAuth();
@@ -17,7 +18,7 @@ const Signup = () => {
     e.preventDefault();
     setError('');
 
-    if (!name || !email || !password || !confirmPassword) {
+    if (!name || !email || !password || !confirmPassword || !storeName) {
       setError('Please fill all fields');
       return;
     }
@@ -33,7 +34,7 @@ const Signup = () => {
     }
 
     setLoading(true);
-    const result = await signup(name, email, password);
+    const result = await signup(name, email, password, storeName);
 
     if (result.success) {
       navigate('/dashboard');
@@ -52,8 +53,12 @@ const Signup = () => {
             <FaCube />
           </div>
         </div>
-        <h2 className="text-2xl font-bold text-center text-gray-800">Create Account</h2>
-        <p className="text-center text-gray-500 text-sm mb-6">Sign up to get started</p>
+        <h2 className="text-2xl font-bold text-center text-gray-800">
+          Create Account
+        </h2>
+        <p className="text-center text-gray-500 text-sm mb-6">
+          Start your online store with StoreForge
+        </p>
 
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
@@ -80,6 +85,17 @@ const Signup = () => {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="bg-transparent outline-none w-full text-sm"
+            />
+          </div>
+
+          <div className="flex items-center border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 focus-within:border-primary">
+            <FaStore className="text-gray-400 mr-3" />
+            <input
+              type="text"
+              placeholder="Store Name (e.g., My Saree Shop)"
+              value={storeName}
+              onChange={(e) => setStoreName(e.target.value)}
               className="bg-transparent outline-none w-full text-sm"
             />
           </div>
@@ -117,7 +133,10 @@ const Signup = () => {
 
         <p className="text-center mt-4 text-sm text-gray-600">
           Already have an account?{' '}
-          <Link to="/login" className="text-primary hover:underline font-semibold">
+          <Link
+            to="/login"
+            className="text-primary hover:underline font-semibold"
+          >
             Login
           </Link>
         </p>
