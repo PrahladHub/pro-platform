@@ -58,7 +58,7 @@ const Checkout = () => {
     }
 
     try {
-      const API_URL = 'http://localhost:5000/api';
+      const API_URL = 'https://pro-platform-backend.onrender.com/api';
 
       const orderData = {
         customer: {

@@ -20,7 +20,7 @@ const Products = () => {
   });
   const [saving, setSaving] = useState(false);
 
-  const API_URL = 'http://localhost:5000/api';
+  const API_URL = 'https://pro-platform-backend.onrender.com/api';
 
   useEffect(() => {
     fetchProducts();
