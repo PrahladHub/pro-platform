@@ -1,6 +1,7 @@
 // API Configuration - LIVE BACKEND
 const API_URL = 'https://pro-platform-backend.onrender.com/api';
 
+// Helper function for API calls
 const apiCall = async (endpoint, method = 'GET', data = null, storeSlug = null) => {
   const options = {
     method,
@@ -19,11 +20,13 @@ const apiCall = async (endpoint, method = 'GET', data = null, storeSlug = null) 
   return result;
 };
 
+// Auth APIs
 export const authAPI = {
   signup: (userData) => apiCall('/auth/signup', 'POST', userData),
   login: (credentials) => apiCall('/auth/login', 'POST', credentials),
 };
 
+// Product APIs
 export const productAPI = {
   getStoreProducts: (storeSlug) => apiCall('/products', 'GET', null, storeSlug),
   getProduct: (id) => apiCall(`/products/${id}`, 'GET'),
@@ -32,6 +35,7 @@ export const productAPI = {
   deleteProduct: (id) => apiCall(`/products/${id}`, 'DELETE'),
 };
 
+// Upload API
 export const uploadAPI = {
   uploadImage: async (file) => {
     const formData = new FormData();
@@ -54,6 +58,17 @@ export const subscriptionAPI = {
   getCurrent: () => apiCall('/subscriptions/current', 'GET'),
   getMy: () => apiCall('/subscriptions/my', 'GET'),
   submit: (data) => apiCall('/subscriptions/submit', 'POST', data),
+};
+
+// Admin APIs (Platform Owner)
+export const adminAPI = {
+  getStats: () => apiCall('/admin/stats', 'GET'),
+  getStores: () => apiCall('/admin/stores', 'GET'),
+  getUsers: () => apiCall('/admin/users', 'GET'),
+  getOrders: () => apiCall('/admin/orders', 'GET'),
+  getSubscriptions: () => apiCall('/admin/subscriptions', 'GET'),
+  approveSubscription: (id) => apiCall(`/admin/subscriptions/${id}/approve`, 'PUT'),
+  rejectSubscription: (id) => apiCall(`/admin/subscriptions/${id}/reject`, 'PUT'),
 };
 
 export default apiCall;

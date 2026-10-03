@@ -13,6 +13,7 @@ import {
   FaDesktop,
   FaMoneyBill,
   FaUser,
+  FaShield,
 } from 'react-icons/fa6';
 import { useAuth } from '../context/AuthContext';
 
@@ -57,12 +58,24 @@ const Sidebar = () => {
           </NavLink>
         ))}
 
-        {/* Desktop Link - Only if PIN set */}
+        {/* Platform Admin Link */}
+        <NavLink
+          to="/admin-panel"
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-5 py-3 text-sm text-yellow-400 font-semibold mt-2 border-t border-gray-700 hover:bg-sidebar-hover ${
+              isActive ? 'bg-sidebar-hover text-white border-l-4 border-yellow-400' : ''
+            }`
+          }
+        >
+          <FaShield /> Platform Admin
+        </NavLink>
+
+        {/* Desktop Link */}
         {isPinSet && (
           <NavLink
             to="/workspace"
             className={({ isActive }) =>
-              `flex items-center gap-3 px-5 py-3 text-sm text-blue-400 font-semibold mt-2 border-t border-gray-700 hover:bg-sidebar-hover ${
+              `flex items-center gap-3 px-5 py-3 text-sm text-blue-400 font-semibold border-t border-gray-700 hover:bg-sidebar-hover ${
                 isActive ? 'bg-sidebar-hover text-white border-l-4 border-blue-400' : ''
               }`
             }
@@ -72,7 +85,7 @@ const Sidebar = () => {
         )}
       </nav>
 
-      {/* User Profile Section */}
+      {/* User Profile */}
       <div className="p-4 border-t border-gray-700">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white text-sm">
