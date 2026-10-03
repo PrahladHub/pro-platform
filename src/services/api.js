@@ -17,8 +17,7 @@ const apiCall = async (endpoint, method = 'GET', data = null, storeSlug = null) 
 
   if (!response.ok) throw new Error(result.message || 'Something went wrong');
   return result;
-};
-
+}
 // Auth APIs
 export const authAPI = {
   signup: (userData) => apiCall('/auth/signup', 'POST', userData),
