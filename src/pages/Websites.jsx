@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
+
 import {
   FaGlobe,
   FaGear,
@@ -16,7 +17,7 @@ import {
   FaCheck,
 } from 'react-icons/fa6';
 
-const API_URL = 'http://localhost:5000/api';
+import { websiteAPI } from '../services/api';
 
 const Websites = () => {
   const navigate = useNavigate();
@@ -61,36 +62,12 @@ const Websites = () => {
       setLoading(true);
       setError('');
 
-      const token = localStorage.getItem('token');
-
-      if (!token) {
-        throw new Error('Please login again.');
-      }
-
-      const response = await fetch(
-        `${API_URL}/websites`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message ||
-          data.error ||
-          'Failed to load websites'
-        );
-      }
+      const data = await websiteAPI.getAll();
 
       setWebsites(data.websites || []);
     } catch (error) {
       console.error('Fetch websites error:', error);
-      setError(error.message);
+      setError(error.message || 'Failed to load websites');
     } finally {
       setLoading(false);
     }
@@ -107,13 +84,12 @@ const Websites = () => {
 
     const storeSlug =
       savedStore?.slug ||
+      localStorage.getItem('storeSlug') ||
       website.storeSlug ||
       website.store?.slug;
 
     if (!storeSlug) {
-      alert(
-        'Store URL not found. Please login again.'
-      );
+      alert('Store URL not found. Please login again.');
       return;
     }
 
@@ -184,38 +160,15 @@ const Websites = () => {
     try {
       setActionLoading(true);
 
-      const token = localStorage.getItem('token');
-
-      if (!token) {
-        throw new Error('Please login again.');
-      }
-
-      const response = await fetch(
-        `${API_URL}/websites/${editingWebsite._id}`,
+      const data = await websiteAPI.update(
+        editingWebsite._id,
         {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            name: editForm.name.trim(),
-            domain: editForm.domain.trim(),
-            description: editForm.description.trim(),
-            category: editForm.category,
-          }),
+          name: editForm.name.trim(),
+          domain: editForm.domain.trim(),
+          description: editForm.description.trim(),
+          category: editForm.category,
         }
       );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message ||
-          data.error ||
-          'Failed to update website'
-        );
-      }
 
       setWebsites((previous) =>
         previous.map((website) =>
@@ -230,7 +183,7 @@ const Websites = () => {
       alert('Website updated successfully. ✅');
     } catch (error) {
       console.error('Update website error:', error);
-      alert(error.message);
+      alert(error.message || 'Failed to update website');
     } finally {
       setActionLoading(false);
     }
@@ -257,31 +210,7 @@ const Websites = () => {
     try {
       setActionLoading(true);
 
-      const token = localStorage.getItem('token');
-
-      if (!token) {
-        throw new Error('Please login again.');
-      }
-
-      const response = await fetch(
-        `${API_URL}/websites/${website._id}`,
-        {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message ||
-          data.error ||
-          'Failed to delete website'
-        );
-      }
+      await websiteAPI.delete(website._id);
 
       setWebsites((previous) =>
         previous.filter(
@@ -292,7 +221,7 @@ const Websites = () => {
       alert('Website deleted successfully. 🗑️');
     } catch (error) {
       console.error('Delete website error:', error);
-      alert(error.message);
+      alert(error.message || 'Failed to delete website');
     } finally {
       setActionLoading(false);
     }
@@ -311,31 +240,9 @@ const Websites = () => {
     try {
       setActionLoading(true);
 
-      const token = localStorage.getItem('token');
-
-      if (!token) {
-        throw new Error('Please login again.');
-      }
-
-      const response = await fetch(
-        `${API_URL}/websites/${website._id}/publish`,
-        {
-          method: 'PUT',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const data = await websiteAPI.publish(
+        website._id
       );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message ||
-          data.error ||
-          'Failed to publish website'
-        );
-      }
 
       setWebsites((previous) =>
         previous.map((item) =>
@@ -348,7 +255,7 @@ const Websites = () => {
       alert('Website published successfully. 🚀');
     } catch (error) {
       console.error('Publish website error:', error);
-      alert(error.message);
+      alert(error.message || 'Failed to publish website');
     } finally {
       setActionLoading(false);
     }
@@ -375,31 +282,9 @@ const Websites = () => {
     try {
       setActionLoading(true);
 
-      const token = localStorage.getItem('token');
-
-      if (!token) {
-        throw new Error('Please login again.');
-      }
-
-      const response = await fetch(
-        `${API_URL}/websites/${website._id}/unpublish`,
-        {
-          method: 'PUT',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const data = await websiteAPI.unpublish(
+        website._id
       );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message ||
-          data.error ||
-          'Failed to unpublish website'
-        );
-      }
 
       setWebsites((previous) =>
         previous.map((item) =>
@@ -412,7 +297,10 @@ const Websites = () => {
       alert('Website unpublished successfully.');
     } catch (error) {
       console.error('Unpublish website error:', error);
-      alert(error.message);
+      alert(
+        error.message ||
+          'Failed to unpublish website'
+      );
     } finally {
       setActionLoading(false);
     }
@@ -553,6 +441,7 @@ const Websites = () => {
           {!loading &&
             !error &&
             websites.length === 0 && (
+
               <div className="bg-white p-10 rounded-xl text-center shadow-sm">
 
                 <FaGlobe className="text-5xl text-gray-300 mx-auto mb-4" />
@@ -695,6 +584,7 @@ const Websites = () => {
                           className="w-full mt-3 py-2 bg-orange-50 text-orange-600 rounded-lg text-xs font-medium hover:bg-orange-100 disabled:opacity-50"
                         >
                           <FaRotateLeft className="inline mr-1" />
+
                           {actionLoading
                             ? 'Working...'
                             : 'Unpublish'}
@@ -710,6 +600,7 @@ const Websites = () => {
                           className="w-full mt-3 py-2 bg-green-50 text-green-600 rounded-lg text-xs font-medium hover:bg-green-100 disabled:opacity-50"
                         >
                           <FaRocket className="inline mr-1" />
+
                           {actionLoading
                             ? 'Publishing...'
                             : 'Publish Website'}
@@ -861,14 +752,14 @@ const Websites = () => {
                 }
                 className="px-5 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark disabled:opacity-50"
               >
-                {actionLoading
-                  ? 'Saving...'
-                  : (
-                    <>
-                      <FaCheck className="inline mr-1" />
-                      Save Changes
-                    </>
-                  )}
+                {actionLoading ? (
+                  'Saving...'
+                ) : (
+                  <>
+                    <FaCheck className="inline mr-1" />
+                    Save Changes
+                  </>
+                )}
               </button>
 
             </div>

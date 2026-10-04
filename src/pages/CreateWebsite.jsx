@@ -9,8 +9,7 @@ import {
   FaCheck,
 } from 'react-icons/fa6';
 import { useAuth } from '../context/AuthContext';
-
-const API_URL = 'http://localhost:5000/api';
+import { websiteAPI } from '../services/api';
 
 const CreateWebsite = () => {
   const navigate = useNavigate();
@@ -37,12 +36,20 @@ const CreateWebsite = () => {
     'Other',
   ];
 
+  // =====================================================
+  // INPUT CHANGE
+  // =====================================================
+
   const handleChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
+    setFormData((previous) => ({
+      ...previous,
       [e.target.name]: e.target.value,
     }));
   };
+
+  // =====================================================
+  // NEXT STEP
+  // =====================================================
 
   const nextStep = () => {
     setError('');
@@ -53,17 +60,25 @@ const CreateWebsite = () => {
     }
 
     if (step < 3) {
-      setStep((prev) => prev + 1);
+      setStep((previous) => previous + 1);
     }
   };
+
+  // =====================================================
+  // PREVIOUS STEP
+  // =====================================================
 
   const previousStep = () => {
     setError('');
 
     if (step > 1) {
-      setStep((prev) => prev - 1);
+      setStep((previous) => previous - 1);
     }
   };
+
+  // =====================================================
+  // CREATE WEBSITE
+  // =====================================================
 
   const handleSubmit = async () => {
     setError('');
@@ -83,36 +98,24 @@ const CreateWebsite = () => {
     try {
       setSaving(true);
 
-      const response = await fetch(`${API_URL}/websites`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          name: formData.name.trim(),
-          domain: formData.domain.trim(),
-          description: formData.description.trim(),
-          category: formData.category,
-        }),
+      await websiteAPI.create({
+        name: formData.name.trim(),
+        domain: formData.domain.trim(),
+        description: formData.description.trim(),
+        category: formData.category,
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message || data.error || 'Failed to create website'
-        );
-      }
 
       setSuccess(true);
 
       setTimeout(() => {
         navigate('/websites');
       }, 1200);
-    } catch (err) {
-      console.error('Create website error:', err);
-      setError(err.message || 'Something went wrong.');
+    } catch (error) {
+      console.error('Create website error:', error);
+
+      setError(
+        error.message || 'Failed to create website.'
+      );
     } finally {
       setSaving(false);
     }
@@ -120,11 +123,17 @@ const CreateWebsite = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
+
       <Sidebar />
 
       <main className="flex-1 ml-64 p-8">
-        {/* Header */}
+
+        {/* =================================================
+            HEADER
+        ================================================= */}
+
         <div className="mb-8">
+
           <h1 className="text-3xl font-bold text-gray-900">
             Create Website
           </h1>
@@ -132,11 +141,17 @@ const CreateWebsite = () => {
           <p className="text-gray-500 mt-1">
             Create your new website in a few simple steps.
           </p>
+
         </div>
 
-        {/* Success */}
+        {/* =================================================
+            SUCCESS
+        ================================================= */}
+
         {success ? (
+
           <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-200 p-10 text-center">
+
             <div className="w-20 h-20 mx-auto rounded-full bg-green-100 flex items-center justify-center">
               <FaCheck className="text-green-600 text-4xl" />
             </div>
@@ -152,14 +167,25 @@ const CreateWebsite = () => {
             <p className="text-sm text-gray-400 mt-4">
               Redirecting to Websites...
             </p>
+
           </div>
+
         ) : (
+
           <>
-            {/* Progress */}
+
+            {/* =================================================
+                PROGRESS
+            ================================================= */}
+
             <div className="max-w-4xl mx-auto mb-8">
+
               <div className="flex items-center justify-between">
-                {/* Step 1 */}
+
+                {/* STEP 1 */}
+
                 <div className="flex items-center">
+
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
                       step >= 1
@@ -172,24 +198,31 @@ const CreateWebsite = () => {
 
                   <span
                     className={`ml-3 font-medium ${
-                      step >= 1 ? 'text-blue-600' : 'text-gray-400'
+                      step >= 1
+                        ? 'text-blue-600'
+                        : 'text-gray-400'
                     }`}
                   >
                     Basic Info
                   </span>
+
                 </div>
 
                 <div className="flex-1 h-1 bg-gray-200 mx-4">
+
                   <div
                     className="h-full bg-blue-600 transition-all"
                     style={{
                       width: step >= 2 ? '100%' : '0%',
                     }}
                   />
+
                 </div>
 
-                {/* Step 2 */}
+                {/* STEP 2 */}
+
                 <div className="flex items-center">
+
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
                       step >= 2
@@ -202,24 +235,31 @@ const CreateWebsite = () => {
 
                   <span
                     className={`ml-3 font-medium ${
-                      step >= 2 ? 'text-blue-600' : 'text-gray-400'
+                      step >= 2
+                        ? 'text-blue-600'
+                        : 'text-gray-400'
                     }`}
                   >
                     Settings
                   </span>
+
                 </div>
 
                 <div className="flex-1 h-1 bg-gray-200 mx-4">
+
                   <div
                     className="h-full bg-blue-600 transition-all"
                     style={{
                       width: step >= 3 ? '100%' : '0%',
                     }}
                   />
+
                 </div>
 
-                {/* Step 3 */}
+                {/* STEP 3 */}
+
                 <div className="flex items-center">
+
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
                       step >= 3
@@ -232,35 +272,58 @@ const CreateWebsite = () => {
 
                   <span
                     className={`ml-3 font-medium ${
-                      step >= 3 ? 'text-blue-600' : 'text-gray-400'
+                      step >= 3
+                        ? 'text-blue-600'
+                        : 'text-gray-400'
                     }`}
                   >
                     Preview
                   </span>
+
                 </div>
+
               </div>
+
             </div>
 
-            {/* Error */}
+            {/* =================================================
+                ERROR
+            ================================================= */}
+
             {error && (
+
               <div className="max-w-4xl mx-auto mb-6">
+
                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
                   {error}
                 </div>
+
               </div>
+
             )}
 
-            {/* Main Card */}
+            {/* =================================================
+                MAIN CARD
+            ================================================= */}
+
             <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-200">
-              {/* STEP 1 */}
+
+              {/* =================================================
+                  STEP 1
+              ================================================= */}
+
               {step === 1 && (
+
                 <div className="p-8">
+
                   <div className="flex items-center gap-3 mb-8">
+
                     <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
                       <FaGlobe className="text-blue-600 text-xl" />
                     </div>
 
                     <div>
+
                       <h2 className="text-xl font-bold text-gray-900">
                         Basic Information
                       </h2>
@@ -268,12 +331,17 @@ const CreateWebsite = () => {
                       <p className="text-gray-500 text-sm">
                         Tell us about your website.
                       </p>
+
                     </div>
+
                   </div>
 
                   <div className="space-y-6">
-                    {/* Website Name */}
+
+                    {/* WEBSITE NAME */}
+
                     <div>
+
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
                         Website Name *
                       </label>
@@ -286,10 +354,13 @@ const CreateWebsite = () => {
                         placeholder="e.g. Priya Store"
                         className="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       />
+
                     </div>
 
-                    {/* Domain */}
+                    {/* DOMAIN */}
+
                     <div>
+
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
                         Domain
                       </label>
@@ -306,10 +377,13 @@ const CreateWebsite = () => {
                       <p className="text-xs text-gray-400 mt-2">
                         You can leave this empty and configure it later.
                       </p>
+
                     </div>
 
-                    {/* Description */}
+                    {/* DESCRIPTION */}
+
                     <div>
+
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
                         Description
                       </label>
@@ -322,20 +396,31 @@ const CreateWebsite = () => {
                         placeholder="Describe your website..."
                         className="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       />
+
                     </div>
+
                   </div>
+
                 </div>
+
               )}
 
-              {/* STEP 2 */}
+              {/* =================================================
+                  STEP 2
+              ================================================= */}
+
               {step === 2 && (
+
                 <div className="p-8">
+
                   <div className="flex items-center gap-3 mb-8">
+
                     <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
                       <FaGear className="text-purple-600 text-xl" />
                     </div>
 
                     <div>
+
                       <h2 className="text-xl font-bold text-gray-900">
                         Website Settings
                       </h2>
@@ -343,38 +428,55 @@ const CreateWebsite = () => {
                       <p className="text-gray-500 text-sm">
                         Configure your website category.
                       </p>
+
                     </div>
+
                   </div>
 
                   <div className="space-y-6">
-                    {/* Category */}
+
+                    {/* CATEGORY */}
+
                     <div>
+
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
                         Website Category
                       </label>
 
                       <div className="relative">
+
                         <select
                           name="category"
                           value={formData.category}
                           onChange={handleChange}
                           className="w-full appearance-none px-4 py-3 border border-gray-300 rounded-xl outline-none bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
+
                           {categories.map((category) => (
-                            <option key={category} value={category}>
+                            <option
+                              key={category}
+                              value={category}
+                            >
                               {category}
                             </option>
                           ))}
+
                         </select>
 
                         <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+
                       </div>
+
                     </div>
 
-                    {/* Pin Status */}
+                    {/* SECURITY */}
+
                     <div className="bg-gray-50 border border-gray-200 rounded-xl p-5">
+
                       <div className="flex items-center justify-between">
+
                         <div>
+
                           <h3 className="font-semibold text-gray-900">
                             Workspace Security
                           </h3>
@@ -382,6 +484,7 @@ const CreateWebsite = () => {
                           <p className="text-sm text-gray-500 mt-1">
                             Desktop workspace PIN status
                           </p>
+
                         </div>
 
                         <div
@@ -391,23 +494,37 @@ const CreateWebsite = () => {
                               : 'bg-yellow-100 text-yellow-700'
                           }`}
                         >
-                          {isPinSet ? 'PIN Set' : 'Not Set'}
+                          {isPinSet
+                            ? 'PIN Set'
+                            : 'Not Set'}
                         </div>
+
                       </div>
+
                     </div>
+
                   </div>
+
                 </div>
+
               )}
 
-              {/* STEP 3 */}
+              {/* =================================================
+                  STEP 3
+              ================================================= */}
+
               {step === 3 && (
+
                 <div className="p-8">
+
                   <div className="flex items-center gap-3 mb-8">
+
                     <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
                       <FaDesktop className="text-green-600 text-xl" />
                     </div>
 
                     <div>
+
                       <h2 className="text-xl font-bold text-gray-900">
                         Preview
                       </h2>
@@ -415,23 +532,31 @@ const CreateWebsite = () => {
                       <p className="text-gray-500 text-sm">
                         Check your website details before creating it.
                       </p>
+
                     </div>
+
                   </div>
 
                   <div className="border border-gray-200 rounded-2xl overflow-hidden">
+
                     <div className="bg-gray-900 px-5 py-3 flex items-center gap-2">
+
                       <div className="w-3 h-3 rounded-full bg-red-400" />
                       <div className="w-3 h-3 rounded-full bg-yellow-400" />
                       <div className="w-3 h-3 rounded-full bg-green-400" />
 
                       <div className="ml-4 bg-gray-800 rounded-lg px-4 py-2 text-gray-300 text-sm flex-1">
-                        {formData.domain || 'your-website.com'}
+                        {formData.domain ||
+                          'your-website.com'}
                       </div>
+
                     </div>
 
                     <div className="p-8 bg-white">
+
                       <h3 className="text-3xl font-bold text-gray-900">
-                        {formData.name || 'Your Website'}
+                        {formData.name ||
+                          'Your Website'}
                       </h3>
 
                       <p className="text-gray-500 mt-3">
@@ -442,29 +567,45 @@ const CreateWebsite = () => {
                       <div className="mt-6 inline-flex px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-sm font-medium">
                         {formData.category}
                       </div>
+
                     </div>
+
                   </div>
 
                   <div className="mt-6 bg-blue-50 border border-blue-100 rounded-xl p-4">
+
                     <p className="text-sm text-blue-700">
-                      Your website will be created as a <strong>Draft</strong>.
+                      Your website will be created as a{' '}
+                      <strong>Draft</strong>.
                       You can publish it from the Websites page.
                     </p>
+
                   </div>
+
                 </div>
+
               )}
 
-              {/* Footer Buttons */}
+              {/* =================================================
+                  FOOTER BUTTONS
+              ================================================= */}
+
               <div className="border-t border-gray-200 px-8 py-5 flex items-center justify-between">
+
                 <button
-                  onClick={() => navigate('/websites')}
-                  className="px-5 py-2.5 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition"
+                  onClick={() =>
+                    navigate('/websites')
+                  }
+                  disabled={saving}
+                  className="px-5 py-2.5 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition disabled:opacity-50"
                 >
                   Cancel
                 </button>
 
                 <div className="flex items-center gap-3">
+
                   {step > 1 && (
+
                     <button
                       onClick={previousStep}
                       disabled={saving}
@@ -472,30 +613,45 @@ const CreateWebsite = () => {
                     >
                       Back
                     </button>
+
                   )}
 
                   {step < 3 ? (
+
                     <button
                       onClick={nextStep}
-                      className="px-6 py-2.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
+                      disabled={saving}
+                      className="px-6 py-2.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition disabled:opacity-50"
                     >
                       Continue
                     </button>
+
                   ) : (
+
                     <button
                       onClick={handleSubmit}
                       disabled={saving}
                       className="px-6 py-2.5 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {saving ? 'Creating...' : 'Create Website'}
+                      {saving
+                        ? 'Creating...'
+                        : 'Create Website'}
                     </button>
+
                   )}
+
                 </div>
+
               </div>
+
             </div>
+
           </>
+
         )}
+
       </main>
+
     </div>
   );
 };
