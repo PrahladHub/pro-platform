@@ -23,7 +23,7 @@ const Orders = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const API_URL = 'https://pro-platform-backend.onrender.com/api';
+      const API_URL = 'http://localhost:5000/api';
 
       const res = await fetch(`${API_URL}/orders`, {
         headers: {
@@ -48,7 +48,7 @@ const Orders = () => {
   const updateStatus = async (id, status) => {
     try {
       const token = localStorage.getItem('token');
-      const API_URL = 'https://pro-platform-backend.onrender.com/api';
+      const API_URL = 'http://localhost:5000/api';
 
       const res = await fetch(`${API_URL}/orders/${id}`, {
         method: 'PUT',
